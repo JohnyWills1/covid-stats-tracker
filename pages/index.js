@@ -1,65 +1,63 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { Flex, Box, Heading } from '@chakra-ui/core';
+import SearchByCountry from '../components/SearchByCountry';
+import react, { useState, useEffect } from 'react';
+import StatGroup from '../components/StatGroup';
+import axios from 'axios';
 
 export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+	const [data, setData] = useState();
+	const [wData, setWData] = useState();
+	const [country, setCountry] = useState();
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+	// API address
+	// 'https://covid2019-api.herokuapp.com/v2/current'
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+	function onSearchByCountry(searchString) {
+		setCountry(searchString);
+		axios
+			.get('https://covid2019-api.herokuapp.com/v2/country/' + searchString)
+			.then((response) => {
+				setData(response.data);
+				console.log(data);
+			})
+			.catch((error) => {
+				console.log('error -', error);
+			});
+	}
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+	useEffect(() => {
+		axios
+			.get('https://covid2019-api.herokuapp.com/v2/total')
+			.then((response) => {
+				setWData(response.data);
+				console.log(wData);
+			})
+			.catch((error) => {
+				console.log('error - ', error);
+			});
+	}, []);
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+	return (
+		<>
+			<Flex justify='center' align='center' height='100vh' flexDirection='column'>
+				{wData && (
+					<Box p={10}>
+						<Heading pb={2}>World Statistics: </Heading>
+						<StatGroup data={wData} />
+					</Box>
+				)}
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+				<SearchByCountry onSubmit={onSearchByCountry} />
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+				{data && (
+					<Box pr={10} pl={10} pb={10} pt={2}>
+						<Heading pt={2} pb={2}>
+							{data.data.location}:
+						</Heading>
+						<StatGroup data={data} />
+					</Box>
+				)}
+			</Flex>
+		</>
+	);
 }
