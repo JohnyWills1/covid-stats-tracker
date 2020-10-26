@@ -8,6 +8,7 @@ import {
 	StatGroup,
 	Box,
 	Badge,
+	Text,
 } from '@chakra-ui/core';
 
 export default function StatBlock({ statType, statNumber, statDate }) {
@@ -18,9 +19,9 @@ export default function StatBlock({ statType, statNumber, statDate }) {
 					<Stat>
 						<StatLabel pb={2}>{statType}</StatLabel>
 						<StatNumber pb={2}>{statNumber.toLocaleString('en')}</StatNumber>
-						<Badge rounded='full' px='2' variantColor='blue' variant='subtle'>
-							Updated on - {statDate}
-						</Badge>
+						<Text>Updated on:{' '}
+						<Badge rounded='full' variantColor='blue' variant='subtle'>{statDate}</Badge>
+						</Text>
 					</Stat>
 				</StatGroup>
 			</Box>
